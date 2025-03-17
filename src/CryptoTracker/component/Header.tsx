@@ -1,9 +1,9 @@
 import styled from "styled-components"
 import { Link } from "react-router-dom";
-import React from "react";
+// import React from "react";
 import { Moon, Sun } from "lucide-react";
 import { themeAtom } from "../recoil/index";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState } from "recoil";
 
 const Container = styled.header`
     position: sticky;

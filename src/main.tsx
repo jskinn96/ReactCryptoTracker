@@ -1,4 +1,4 @@
-import React from 'react';
+// import React from 'react';
 import ReactDOM from 'react-dom/client';
 //g 라우터를 연결시키기 위해 필요
 import { RouterProvider } from "react-router-dom";

@@ -1,10 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
+import { useState } from "react";
 import { useLocation, useParams, Outlet, Link, useMatch } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import LoadingEl from "./Loading";
-import axios from "axios";
+// import axios from "axios";
 //g 객체의 타입을 확인하는 함수
-import typeTranslateObjConsole from "../../utils/typeTranslateConsole";
+// import typeTranslateObjConsole from "../../utils/typeTranslateConsole";
 import { Helmet } from "react-helmet-async";
 import styled from "styled-components";
 import { coinInfoFetch } from "../api/allCoins";

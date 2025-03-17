@@ -1,5 +1,5 @@
 import axios from "axios";
-import typeTranslateObjConsole from "../../utils/typeTranslateConsole";
+// import typeTranslateObjConsole from "../../utils/typeTranslateConsole";
 
 const coinRoot = 'https://api.coingecko.com/api/v3/coins';
 

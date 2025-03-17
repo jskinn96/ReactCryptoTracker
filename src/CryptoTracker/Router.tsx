@@ -5,7 +5,8 @@ import CoinMain from "./component/CoinMain";
 import CoinChart from "./component/Chart";
 import Price from "./component/Price";
 
-export const router = createBrowserRouter([
+export const router = createBrowserRouter(
+[
     {
         path : "/",
         element : <App />,
@@ -30,4 +31,8 @@ export const router = createBrowserRouter([
             }
         ]
     }
-]);
+],
+{ 
+    basename: "/ReactCryptoTracker" 
+}
+);

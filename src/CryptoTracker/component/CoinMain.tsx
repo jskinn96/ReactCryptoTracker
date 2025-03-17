@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
-import axios from "axios";
+// import { useEffect, useState } from "react";
+// import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import { allCoinsFetch } from "../api/allCoins";
 import LoadingEl from "./Loading";

@@ -5,7 +5,7 @@ import { HelmetProvider } from "react-helmet-async";
 import { DarkMode, LightMode } from "../common/theme";
 import { ThemeProvider } from 'styled-components';
 import Reset from '../common/resetCSS';
-import { useEffect, useState } from "react";
+// import { useEffect, useState } from "react";
 import { themeAtom } from "./recoil/index";
 import { useRecoilValue } from "recoil";
 
