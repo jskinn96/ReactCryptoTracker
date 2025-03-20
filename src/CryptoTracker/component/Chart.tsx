@@ -4,7 +4,7 @@ import { coinChartFetch } from "../api/allCoins";
 import Chart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
 import LoadingEl from "./Loading";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { LineChart, CandlestickChart } from "lucide-react";
 import styled from "styled-components";
 import { useRecoilValue } from "recoil";
@@ -53,6 +53,11 @@ const ChartLine = styled.div`
     background-color: ${props => props.theme.bgDark};
 `;
 
+interface ICandle {
+    x: Date;
+    y: number[] 
+} 
+
 const CoinChart = () => {
 
     const { coinId } = useOutletContext<{ coinId: string }>();
@@ -61,169 +66,181 @@ const CoinChart = () => {
         queryFn : () => coinChartFetch(coinId)
     });
     const [chartType, setChartType] = useState< "line" | "candlestick" >("candlestick");
+    const [chartSD, setChartSD] = useState<ApexOptions["series"]>([]);
+    const [chartOpt, setChartOpt] = useState<ApexOptions>({});
     const themeSelect = useRecoilValue(themeAtom);
 
-    const safeChartData = Array.isArray(chartData) ? chartData : [];
-
+    let safeChartData = Array.isArray(chartData) ? chartData : [];
+    
     const handleToggle = (value: "line" | "candlestick" ) => {
         setChartType(value);
     };
-    
+
     const timeCloseData: number[] = [];
 
-    let chartSD, chartOpt: ApexOptions;
-    if (chartType === 'line') {
+    useEffect(() => {
 
-        const closePriceData: number[]  = [];
+        if (!safeChartData.length) return;
+
+        let tmpChartSD = [];
+        let tmpChartOpt: ApexOptions = {};
+
+        if (chartType === 'line') {
     
-        safeChartData.forEach((el) => {
+            const closePriceData: any  = [];
+            
+            safeChartData.forEach((el) => {
+
+                timeCloseData.push(el[0]);
+                
+                closePriceData.push({x: el[0], y: el[4]});
+            });
+
+            tmpChartSD = [
+                {
+                  name: "Price",
+                  data: closePriceData,
+                },
+            ];
     
-            timeCloseData.push(el[0]);
-            closePriceData.push(el[4]);
-        });
-
-        chartSD = [
-            {
-              name: "Price",
-              data: closePriceData,
-            },
-        ];
-
-        chartOpt = {
-            theme: {
-                mode: themeSelect,
-            },
-            chart: {
-                height: 300,
-                width: 500,
-                toolbar: {
-                    show: false,
+            tmpChartOpt = {
+                theme: {
+                    mode: themeSelect,
                 },
-                background: "transparent",
-            },
-            grid: {
-                show: false 
-            },
-            stroke: {
-                curve: "smooth",
-                width: 4,
-            },
-            yaxis: {
-                show: false,
-            },
-            xaxis: {
-                type: "datetime",
-                categories: timeCloseData, 
-                axisBorder: {
-                    show: false
+                chart: {
+                    height: 300,
+                    width: 500,
+                    toolbar: {
+                        show: false,
+                    },
+                    background: "transparent",
                 },
-                axisTicks: {
-                    show: false
-                },
-                labels: {
+                grid: {
                     show: false 
                 },
-            },
-            fill: {
-                type: "gradient",
-                gradient: {
-                    gradientToColors: ["#0be881"], 
-                    stops: [0, 100]
+                stroke: {
+                    curve: "smooth",
+                    width: 4,
                 },
-            },
-            colors: ["#0fbcf9"],
-            tooltip: {
-                y: {
-                    formatter: (value: number) => `$${value.toFixed(2)}`,
-                },
-            },
-        }
-
-    } else {
-
-        interface ICandle {
-            x: Date;
-            y: number[] 
-        } 
-
-        const seriesData: ICandle[] = [];
-
-        safeChartData.forEach((el) => {
-    
-            timeCloseData.push(el[0]);
-
-            const tmpSD = {
-                x: new Date(el[0]),
-                y: el.slice(1)
-            }
-
-            seriesData.push(tmpSD);
-        });
-
-        chartSD = [
-            {
-              data: seriesData
-            }
-        ];
-
-        chartOpt = {
-            theme: {
-                mode: themeSelect,
-            },
-            chart: {
-                type: "candlestick",
-                height: 300,
-                width: 500,
-                toolbar: {
+                yaxis: {
                     show: false,
                 },
-                background: "transparent",
-            },
-            plotOptions: {
-                candlestick: {
-                    colors: {
-                        upward: "#26a69a", 
-                        downward: "#ef5350", 
+                xaxis: {
+                    type: "datetime",
+                    axisBorder: {
+                        show: false
                     },
-                    wick: {
-                        useFillColor: true,
+                    axisTicks: {
+                        show: false
+                    },
+                    labels: {
+                        show: false 
                     },
                 },
-            },
-            stroke: {
-                width: 1,
-            },
-            grid: {
-                show: false 
-            },
-            yaxis: {
-                show: false,
-            },
-            xaxis: {
-                type: "datetime",
-                categories: timeCloseData, 
-                axisBorder: {
-                    show: false
+                fill: {
+                    type: "gradient",
+                    gradient: {
+                        gradientToColors: ["#0be881"], 
+                        stops: [0, 100]
+                    },
                 },
-                axisTicks: {
-                    show: false
+                colors: ["#0fbcf9"],
+                tooltip: {
+                    shared: false,
+                    x: {
+                        format: "yyyy-MM-dd HH:mm"
+                    },
+                    y: {
+                        formatter: (value: number) => `$${value.toFixed(2)}`,
+                    },
                 },
-                labels: {
+            }
+            
+        } else {
+
+            const seriesData: ICandle[] = [];
+    
+            safeChartData.forEach((el) => {
+                
+                timeCloseData.push(el[0]);
+
+                const tmpSD = {
+                    x: new Date(el[0]),
+                    y: el.slice(1)
+                }
+    
+                seriesData.push(tmpSD);
+            });
+    
+            tmpChartSD = [
+                {
+                  data: seriesData
+                }
+            ];
+    
+            tmpChartOpt = {
+                theme: {
+                    mode: themeSelect,
+                },
+                chart: {
+                    type: "candlestick",
+                    height: 300,
+                    width: 500,
+                    toolbar: {
+                        show: false,
+                    },
+                    background: "transparent",
+                },
+                plotOptions: {
+                    candlestick: {
+                        colors: {
+                            upward: "#26a69a", 
+                            downward: "#ef5350", 
+                        },
+                        wick: {
+                            useFillColor: true,
+                        },
+                    },
+                },
+                stroke: {
+                    width: 1,
+                },
+                grid: {
                     show: false 
                 },
-            },
-            fill: {
-                type: 'solid',
-                gradient: {}
-            },
-            tooltip: {
-                y: {
-                    formatter: (value: number) => `$${value.toFixed(2)}`,
+                yaxis: {
+                    show: false,
                 },
-            },
+                xaxis: {
+                    type: "datetime", 
+                    axisBorder: {
+                        show: false
+                    },
+                    axisTicks: {
+                        show: false
+                    },
+                    labels: {
+                        show: false 
+                    },
+                },
+                fill: {
+                    type: 'solid',
+                    gradient: {}
+                },
+                tooltip: {
+                    y: {
+                        formatter: (value: number) => `$${value.toFixed(2)}`,
+                    },
+                },
+            }
         }
-    }
+        
+        setChartSD(tmpChartSD);
+        setChartOpt(tmpChartOpt);
 
+    }, [chartType, safeChartData, themeSelect]);
+
+    //g chart component가 완전히 리렌더링 되어야 오류가 발생하지 않기에 key 속성을 추가하여 타입이 바뀌면 강제 리렌더링을 시켰다.
     return (
         <div>
             {
@@ -241,11 +258,18 @@ const CoinChart = () => {
                             </ToggleButton>
                         </ToggleContainer>
                         <ChartLine>
-                            <Chart 
-                                type={chartType}
-                                series={chartSD}
-                                options={chartOpt}
-                            />
+                            {
+                                (
+                                    (chartSD || []).length > 0
+                                ) && chartOpt && (
+                                    <Chart
+                                        key={chartType} 
+                                        type={chartType}
+                                        series={chartSD}
+                                        options={chartOpt}
+                                    />
+                                )
+                            }
                         </ChartLine>
                     </ChartWrap>
                 )
