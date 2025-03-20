@@ -60,7 +60,7 @@ const CoinChart = () => {
         queryKey : [coinId, "chart"],
         queryFn : () => coinChartFetch(coinId)
     });
-    const [chartType, setChartType] = useState< "line" | "candlestick" >("line");
+    const [chartType, setChartType] = useState< "line" | "candlestick" >("candlestick");
     const themeSelect = useRecoilValue(themeAtom);
 
     const safeChartData = Array.isArray(chartData) ? chartData : [];
@@ -233,11 +233,11 @@ const CoinChart = () => {
                 : (
                     <ChartWrap>
                         <ToggleContainer>
-                            <ToggleButton active={chartType === "line" ? 'true' : 'false'} onClick={() => handleToggle("line")}>
-                                <LineChart />
-                            </ToggleButton>
                             <ToggleButton active={chartType === "candlestick" ? 'true' : 'false'} onClick={() => handleToggle("candlestick")}>
                                 <CandlestickChart />
+                            </ToggleButton>
+                            <ToggleButton active={chartType === "line" ? 'true' : 'false'} onClick={() => handleToggle("line")}>
+                                <LineChart />
                             </ToggleButton>
                         </ToggleContainer>
                         <ChartLine>
